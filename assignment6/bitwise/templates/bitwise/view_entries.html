@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Saved Entries - Assignment 6</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .entry-count {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .no-entries {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .no-entries-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .entry-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+        }
+        
+        .entry-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .entry-number {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .entry-timestamp {
+            color: #6c757d;
+            font-size: 0.95em;
+        }
+        
+        .entry-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .entry-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .entry-section h4 {
+            color: #495057;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .data-value {
+            color: #333;
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        
+        .list-values {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        
+        .list-item {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .entry-content {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 All Saved Entries</h1>
+        
+        <div class="header-actions">
+            <div class="entry-count">
+                {% if entries %}
+                    Total Entries: {{ total_entries }}
+                {% else %}
+                    No entries found
+                {% endif %}
+            </div>
+            <a href="{% url 'bitwise:index' %}" class="btn">← Back to Calculator</a>
+        </div>
+        
+        {% if error %}
+        <div class="error">
+            <strong>⚠️ Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if not entries and not error %}
+        <div class="no-entries">
+            <div class="no-entries-icon">📭</div>
+            <h2>No Entries Yet</h2>
+            <p>Start by submitting some calculations!</p>
+            <br>
+            <a href="{% url 'bitwise:index' %}" class="btn">Go to Calculator</a>
+        </div>
+        {% endif %}
+        
+        {% for entry in entries %}
+        <div class="entry-card">
+            <div class="entry-header">
+                <div class="entry-number">Entry #{{ forloop.revcounter }}</div>
+                <div class="entry-timestamp">{{ entry.timestamp|date:"F d, Y - H:i:s" }}</div>
+            </div>
+            
+            <div class="entry-content">
+                <div class="entry-section">
+                    <h4>📥 Input Values</h4>
+                    <div class="data-row">
+                        <span class="data-label">A:</span>
+                        <span class="data-value">{{ entry.inputs.a }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">B:</span>
+                        <span class="data-value">{{ entry.inputs.b }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">C:</span>
+                        <span class="data-value">{{ entry.inputs.c }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">D:</span>
+                        <span class="data-value">{{ entry.inputs.d }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">E:</span>
+                        <span class="data-value">{{ entry.inputs.e }}</span>
+                    </div>
+                </div>
+                
+                <div class="entry-section">
+                    <h4>📊 Statistics</h4>
+                    <div class="data-row">
+                        <span class="data-label">Average:</span>
+                        <span class="data-value">{{ entry.results.average }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Average > 50:</span>
+                        <span class="badge {% if entry.results.average_greater_than_50 %}badge-success{% else %}badge-warning{% endif %}">
+                            {% if entry.results.average_greater_than_50 %}Yes{% else %}No{% endif %}
+                        </span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Positive Count:</span>
+                        <span class="data-value">{{ entry.results.positive_count }}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Count is Even:</span>
+                        <span class="badge {% if entry.results.positive_count_even %}badge-success{% else %}badge-warning{% endif %}">
+                            {% if entry.results.positive_count_even %}Even{% else %}Odd{% endif %}
+                        </span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Has Negative:</span>
+                        <span class="badge {% if entry.results.has_negative %}badge-warning{% else %}badge-success{% endif %}">
+                            {% if entry.results.has_negative %}Yes{% else %}No{% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="entry-section">
+                    <h4>📋 Lists</h4>
+                    <div style="margin-bottom: 15px;">
+                        <strong style="color: #666;">Original Values:</strong>
+                        <div class="list-values">
+                            {% for val in entry.results.original_values %}
+                            <span class="list-item">{{ val }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <strong style="color: #666;">Sorted (> 10):</strong>
+                        <div class="list-values">
+                            {% if entry.results.sorted_values_gt_10 %}
+                                {% for val in entry.results.sorted_values_gt_10 %}
+                                <span class="list-item">{{ val }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span style="color: #999; font-style: italic;">None</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
