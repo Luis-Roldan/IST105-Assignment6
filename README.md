@@ -51,6 +51,3 @@ This application demonstrates:
    - View historical entries with timestamps
    - Persistent storage across sessions
 
----
-
-## 🏗️ Architecture
